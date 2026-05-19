@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Lexo.pe — Portal del Abogado</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.6.0/dist/tabler-icons.min.css" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --navy:        #0D1B2A;
+    --navy-mid:    #1A3050;
+    --navy-light:  #EAF0F8;
+    --blue:        #1D5FAA;
+    --blue-light:  #3B82C4;
+    --blue-pale:   #DBE9F8;
+    --gold:        #B8862D;
+    --gold-pale:   #FDF3DC;
+    --green:       #196A40;
+    --green-pale:  #E3F4EC;
+    --red:         #B82D2D;
+    --red-pale:    #FDEAEA;
+    --warn-pale:   #FEF6E4;
+    --warn:        #8A6200;
+    --bg:          #F4F6FA;
+    --surface:     #FFFFFF;
+    --border:      #DCE3EE;
+    --text:        #0D1B2A;
+    --text-muted:  #556070;
+    --text-faint:  #8A96A8;
+    --radius-sm:   6px;
+    --radius:      10px;
+    --radius-lg:   14px;
+    --shadow:      0 1px 4px rgba(13,27,42,0.08), 0 4px 16px rgba(13,27,42,0.06);
+    --shadow-sm:   0 1px 3px rgba(13,27,42,0.07);
+  }
+
+  html, body { height: 100%; font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); font-size: 14px; line-height: 1.5; }
+
+  /* ── SCREENS ─────────────────────────────────── */
+  .screen { display: none; min-height: 100vh; }
+  .screen.active { display: flex; flex-direction: column; }
+
+  /* ── TOPBAR ──────────────────────────────────── */
+  .topbar {
+    background: var(--navy);
+    padding: 0 1.75rem;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .logo { font-family: 'Fraunces', serif; font-size: 22px; color: #fff; letter-spacing: -0.5px; cursor: pointer; }
+  .logo em { color: #5BA3D9; font-style: normal; }
+  .topbar-right { display: flex; align-items: center; gap: 6px; }
+  .topbar-nav { display: flex; gap: 2px; margin-right: 12px; }
+  .tnav { background: none; border: none; color: rgba(255,255,255,0.6); font-family: 'DM Sans', sans-serif; font-size: 13px; padding: 6px 13px; border-radius: var(--radius-sm); cursor: pointer; transition: all .15s; position: relative; }
+  .tnav:hover { color: #fff; background: rgba(255,255,255,0.08); }
+  .tnav.active { color: #fff; background: rgba(91,163,217,0.2); }
+  .tnav .badge { background: #E24B4A; color: #fff; border-radius: 20px; font-size: 10px; padding: 1px 5px; position: absolute; top: 4px; right: 4px; }
+  .avatar-chip { display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 4px 8px; border-radius: var(--radius-sm); transition: background .15s; }
+  .avatar-chip:hover { background: rgba(255,255,255,0.08); }
+  .avatar { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #3B82C4, #1D5FAA); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; color: #fff; flex-shrink: 0; }
+  .avatar-name { font-size: 13px; color: rgba(255,255,255,0.8); }
+
+  /* ── LAYOUT ─────────────────────────────────── */
+  .app-body { display: grid; grid-template-columns: 220px 1fr; flex: 1; overflow: hidden; }
+  .sidebar { background: var(--surface); border-right: 1px solid var(--border); padding: 1.25rem 0; overflow-y: auto; }
+  .sidebar-section { font-size: 10px; font-weight: 600; letter-spacing: .8px; color: var(--text-faint); text-transform: uppercase; padding: 1rem 1.25rem 0.4rem; }
+  .sitem { display: flex; align-items: center; gap: 10px; padding: 8px 1.25rem; font-size: 13px; color: var(--text-muted); cursor: pointer; border-left: 3px solid transparent; transition: all .15s; }
+  .sitem:hover { color: var(--text); background: var(--bg); }
+  .sitem.active { color: var(--blue); background: var(--blue-pale); border-left-color: var(--blue); font-weight: 500; }
+  .sitem i { font-size: 17px; }
+  .sitem .badge { background: #E24B4A; color: #fff; border-radius: 20px; font-size: 10px; padding: 1px 5px; margin-left: auto; }
+  .main { overflow-y: auto; padding: 1.75rem; background: var(--bg); }
+
+  /* ── CONTENT HEADER ──────────────────────────── */
+  .page-header { margin-bottom: 1.5rem; }
+  .page-title { font-family: 'Fraunces', serif; font-size: 22px; font-weight: 600; color: var(--navy); }
+  .page-sub { font-size: 13px; color: var(--text-muted); margin-top: 3px; }
+
+  /* ── CARDS ───────────────────────────────────── */
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.25rem 1.5rem; box-shadow: var(--shadow-sm); }
+  .card-title { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 1rem; display: flex; align-items: center; gap: 7px; }
+  .card-title i { font-size: 16px; color: var(--blue); }
+
+  /* ── METRIC CARDS ────────────────────────────── */
+  .metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 1.5rem; }
+  .metric { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem 1.25rem; box-shadow: var(--shadow-sm); }
+  .metric-icon { width: 34px; height: 34px; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; font-size: 17px; margin-bottom: 10px; }
+  .metric-label { font-size: 11px; color: var(--text-faint); font-weight: 500; text-transform: uppercase; letter-spacing: .4px; }
+  .metric-value { font-size: 22px; font-weight: 600; color: var(--navy); margin-top: 2px; line-height: 1.1; }
+  .metric-delta { font-size: 11px; margin-top: 4px; }
+  .delta-up { color: var(--green); }
+
+  /* ── BADGE / PILL ────────────────────────────── */
+  .pill { display: inline-flex; align-items: center; gap: 4px; border-radius: 20px; font-size: 11px; font-weight: 500; padding: 3px 9px; }
+  .pill-blue { background: var(--blue-pale); color: var(--blue); }
+  .pill-green { background: var(--green-pale); color: var(--green); }
+  .pill-gold { background: var(--gold-pale); color: var(--gold); }
+  .pill-red { background: var(--red-pale); color: var(--red); }
+  .pill-navy { background: var(--navy-light); color: var(--navy-mid); }
+  .pill-warn { background: var(--warn-pale); color: var(--warn); }
+
+  /* ── VERIFIED BADGE ──────────────────────────── */
+  .verified { display: inline-flex; align-items: center; gap: 5px; background: var(--green-pale); color: var(--green); border-radius: 20px; font-size: 11px; font-weight: 600; padding: 3px 10px; }
+
+  /* ── BUTTONS ─────────────────────────────────── */
+  .btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 18px; border-radius: var(--radius-sm); font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; cursor: pointer; border: none; transition: all .15s; }
+  .btn-primary { background: var(--blue); color: #fff; }
+  .btn-primary:hover { background: var(--navy-mid); }
+  .btn-secondary { background: var(--surface); color: var(--text); border: 1px solid var(--border); }
+  .btn-secondary:hover { background: var(--bg); }
+  .btn-ghost { background: none; color: var(--blue); padding: 6px 10px; border-radius: var(--radius-sm); }
+  .btn-ghost:hover { background: var(--blue-pale); }
+  .btn-sm { padding: 5px 12px; font-size: 12px; }
+
+  /* ── FORM ────────────────────────────────────── */
+  .field { margin-bottom: 1rem; }
+  .field label { display: block; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 5px; }
+  .field input, .field select, .field textarea {
+    width: 100%; padding: 9px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm);
+    font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--text); background: var(--surface);
+    transition: border .15s; outline: none;
+  }
+  .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(29,95,170,0.1); }
+  .field textarea { resize: vertical; }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .field-row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+
+  /* ── TAGS ESPECIALIDADES ────────────────────── */
+  .tags { display: flex; flex-wrap: wrap; gap: 7px; }
+  .tag { padding: 5px 12px; border-radius: 20px; border: 1px solid var(--border); font-size: 12px; cursor: pointer; color: var(--text-muted); background: var(--surface); transition: all .15s; }
+  .tag:hover { border-color: var(--blue); color: var(--blue); }
+  .tag.on { background: var(--blue-pale); color: var(--blue); border-color: var(--blue); font-weight: 500; }
+
+  /* ── UPLOAD ZONES ────────────────────────────── */
+  .upload-zone {
+    border: 1.5px dashed var(--border); border-radius: var(--radius); padding: 16px;
+    text-align: center; cursor: pointer; transition: all .2s; margin-bottom: 10px;
+  }
+  .upload-zone:hover { border-color: var(--blue); background: var(--blue-pale); }
+  .upload-zone i { font-size: 28px; color: var(--text-faint); display: block; margin-bottom: 5px; }
+  .upload-zone p { font-size: 12px; color: var(--text-muted); }
+  .upload-zone strong { color: var(--text); font-size: 13px; }
+  .upload-done {
+    display: flex; align-items: center; gap: 9px; padding: 9px 12px;
+    border: 1px solid #A8DCBA; border-radius: var(--radius-sm);
+    background: var(--green-pale); font-size: 12px; color: var(--green);
+    margin-bottom: 8px;
+  }
+  .upload-done i { font-size: 16px; }
+  .upload-done .size { margin-left: auto; opacity: .65; }
+
+  /* ── ONBOARDING ──────────────────────────────── */
+  .ob-center { flex: 1; display: flex; align-items: flex-start; justify-content: center; padding: 2.5rem 1rem; background: var(--bg); }
+  .ob-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 2rem 2.25rem; width: 100%; max-width: 540px; box-shadow: var(--shadow); }
+  .ob-steps { display: flex; align-items: center; margin-bottom: 2rem; }
+  .ob-dot { width: 28px; height: 28px; border-radius: 50%; border: 1.5px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; color: var(--text-faint); flex-shrink: 0; transition: all .3s; }
+  .ob-dot.done { background: var(--blue); border-color: var(--blue); color: #fff; }
+  .ob-dot.current { border-color: var(--blue); color: var(--blue); }
+  .ob-line { flex: 1; height: 1.5px; background: var(--border); transition: background .3s; }
+  .ob-line.done { background: var(--blue); }
+  .ob-step-labels { display: flex; justify-content: space-between; margin-top: -16px; margin-bottom: 1.75rem; padding: 0 4px; }
+  .ob-step-labels span { font-size: 10px; color: var(--text-faint); text-align: center; width: 80px; margin-left: -26px; }
+  .ob-step-labels span.current { color: var(--blue); font-weight: 600; }
+
+  .ob-title { font-family: 'Fraunces', serif; font-size: 20px; font-weight: 600; color: var(--navy); margin-bottom: 4px; }
+  .ob-sub { font-size: 13px; color: var(--text-muted); margin-bottom: 1.5rem; }
+  .ob-footer { display: flex; justify-content: space-between; align-items: center; padding-top: 1.25rem; border-top: 1px solid var(--border); margin-top: 1.25rem; }
+  .ob-counter { font-size: 12px; color: var(--text-faint); }
+
+  /* ── COMMISSION NOTICE ───────────────────────── */
+  .commission-notice {
+    background: var(--gold-pale); border: 1px solid #E8CE89; border-radius: var(--radius);
+    padding: 12px 14px; display: flex; gap: 10px; margin-bottom: 1.25rem;
+  }
+  .commission-notice i { color: var(--gold); font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+  .commission-notice p { font-size: 12px; color: var(--warn); line-height: 1.6; }
+  .commission-notice strong { font-weight: 600; color: var(--gold); }
+
+  /* ── SECURITY NOTE ───────────────────────────── */
+  .security-note { background: var(--warn-pale); border: 1px solid #E8CE89; border-radius: var(--radius-sm); padding: 10px 12px; font-size: 12px; color: var(--warn); display: flex; gap: 7px; align-items: flex-start; margin-top: 12px; }
+  .security-note i { font-size: 15px; flex-shrink: 0; margin-top: 1px; }
+
+  /* ── STATUS SCREEN ───────────────────────────── */
+  .status-body { text-align: center; padding: 1rem 0; }
+  .status-icon-wrap { width: 64px; height: 64px; border-radius: 50%; background: var(--warn-pale); display: flex; align-items: center; justify-content: center; margin: 0 auto 1.25rem; border: 2px solid #E8CE89; }
+  .status-icon-wrap i { font-size: 28px; color: var(--gold); }
+  .status-track { text-align: left; margin: 1.25rem 0; }
+  .strack-item { display: flex; align-items: center; gap: 10px; padding: 9px 0; font-size: 13px; border-bottom: 1px solid var(--border); }
+  .strack-item:last-child { border-bottom: none; }
+  .strack-item.done { color: var(--green); }
+  .strack-item.doing { color: var(--blue); font-weight: 500; }
+  .strack-item.pending { color: var(--text-faint); }
+  .strack-item i { font-size: 17px; }
+  .ref-num { font-size: 12px; color: var(--text-faint); margin: .75rem 0; }
+  .ref-num strong { color: var(--text); }
+
+  /* ── DASHBOARD GRID ──────────────────────────── */
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+  .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+
+  /* ── ACTIVITY ────────────────────────────────── */
+  .act-item { display: flex; align-items: flex-start; gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--border); }
+  .act-item:last-child { border-bottom: none; }
+  .act-icon { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 15px; flex-shrink: 0; }
+  .act-title { font-size: 13px; color: var(--text); }
+  .act-time { font-size: 11px; color: var(--text-faint); margin-top: 1px; }
+
+  /* ── QUICK ACTIONS ───────────────────────────── */
+  .qa-btn { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 12px; text-align: center; cursor: pointer; font-size: 12px; color: var(--text-muted); transition: all .15s; }
+  .qa-btn:hover { background: var(--blue-pale); color: var(--blue); border-color: var(--blue); }
+  .qa-btn i { font-size: 22px; display: block; margin: 0 auto 5px; }
+
+  /* ── CASES ───────────────────────────────────── */
+  .case-tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--border); margin-bottom: 1.25rem; }
+  .ctab { border: none; background: none; font-family: 'DM Sans', sans-serif; font-size: 13px; padding: 8px 16px; color: var(--text-muted); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: all .15s; }
+  .ctab.active { color: var(--blue); border-bottom-color: var(--blue); font-weight: 500; }
+  .case-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem 1.25rem; margin-bottom: 10px; box-shadow: var(--shadow-sm); transition: box-shadow .15s; }
+  .case-card:hover { box-shadow: var(--shadow); }
+  .case-name { font-size: 14px; font-weight: 600; color: var(--navy); margin: 6px 0 4px; }
+  .case-desc { font-size: 12px; color: var(--text-muted); line-height: 1.6; }
+  .case-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; padding-top: 9px; border-top: 1px solid var(--border); }
+  .case-meta { font-size: 11px; color: var(--text-faint); }
+  .case-price { font-size: 15px; font-weight: 600; color: var(--blue); }
+
+  /* ── MESSAGES ────────────────────────────────── */
+  .chat-layout { display: grid; grid-template-columns: 240px 1fr; gap: 0; border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; height: 440px; background: var(--surface); }
+  .chat-sidebar { border-right: 1px solid var(--border); overflow-y: auto; }
+  .chat-header { padding: 12px 14px; border-bottom: 1px solid var(--border); font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: .5px; }
+  .chat-thread { padding: 10px 14px; border-bottom: 1px solid var(--border); cursor: pointer; transition: background .15s; }
+  .chat-thread:hover { background: var(--bg); }
+  .chat-thread.active { background: var(--blue-pale); }
+  .chat-thread-name { font-size: 13px; font-weight: 500; color: var(--text); display: flex; justify-content: space-between; }
+  .chat-thread-sub { font-size: 11px; color: var(--text-faint); margin-top: 1px; }
+  .chat-main { display: flex; flex-direction: column; }
+  .chat-top { padding: 10px 14px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
+  .chat-body { flex: 1; padding: 14px; overflow-y: auto; display: flex; flex-direction: column; gap: 9px; background: var(--bg); }
+  .msg { max-width: 68%; border-radius: var(--radius); padding: 9px 13px; font-size: 13px; line-height: 1.5; }
+  .msg-in { background: var(--surface); color: var(--text); border: 1px solid var(--border); align-self: flex-start; border-bottom-left-radius: 2px; }
+  .msg-out { background: var(--blue); color: #fff; align-self: flex-end; border-bottom-right-radius: 2px; }
+  .chat-input-row { display: flex; gap: 8px; padding: 10px 14px; border-top: 1px solid var(--border); align-items: center; }
+  .secure-pill { font-size: 11px; background: var(--warn-pale); color: var(--warn); border-radius: 20px; padding: 3px 9px; display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
+  .chat-input { flex: 1; border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 8px 12px; font-family: 'DM Sans', sans-serif; font-size: 13px; outline: none; color: var(--text); }
+  .chat-input:focus { border-color: var(--blue); }
+
+  /* ── EARNINGS ────────────────────────────────── */
+  .earn-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .earn-table th { text-align: left; padding: 8px 0; font-size: 11px; font-weight: 600; color: var(--text-faint); text-transform: uppercase; letter-spacing: .4px; border-bottom: 1px solid var(--border); }
+  .earn-table td { padding: 9px 0; border-bottom: 1px solid var(--border); color: var(--text); }
+  .earn-table tr:last-child td { border-bottom: none; }
+
+  /* ── PROFILE ─────────────────────────────────── */
+  .profile-hero { background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 100%); border-radius: var(--radius-lg); padding: 1.75rem; display: flex; align-items: center; gap: 1.25rem; margin-bottom: 1.25rem; }
+  .profile-avatar { width: 64px; height: 64px; border-radius: 50%; background: linear-gradient(135deg, #3B82C4, #5BA3D9); display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 600; color: #fff; flex-shrink: 0; border: 2px solid rgba(255,255,255,0.2); }
+  .profile-name { font-family: 'Fraunces', serif; font-size: 18px; font-weight: 600; color: #fff; }
+  .profile-cal { font-size: 12px; color: rgba(255,255,255,0.6); margin-top: 3px; }
+  .avail-toggle { display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 13px; }
+  .toggle { width: 36px; height: 20px; border-radius: 20px; background: var(--border); position: relative; cursor: pointer; transition: background .2s; flex-shrink: 0; }
+  .toggle.on { background: var(--green); }
+  .toggle::after { content: ''; position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; border-radius: 50%; background: #fff; transition: transform .2s; }
+  .toggle.on::after { transform: translateX(16px); }
+
+  /* ── LANDING / LOGIN ─────────────────────────── */
+  .landing-wrap { flex: 1; display: grid; grid-template-columns: 1fr 1fr; min-height: calc(100vh - 56px); }
+  .landing-left { background: linear-gradient(150deg, var(--navy) 0%, #152B4A 100%); padding: 3rem 3.5rem; display: flex; flex-direction: column; justify-content: center; position: relative; overflow: hidden; }
+  .landing-left::before { content: ''; position: absolute; inset: 0; background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"); }
+  .landing-tagline { font-family: 'Fraunces', serif; font-size: 36px; font-weight: 600; color: #fff; line-height: 1.25; margin-bottom: 1rem; position: relative; }
+  .landing-tagline em { color: #5BA3D9; font-style: italic; }
+  .landing-desc { font-size: 15px; color: rgba(255,255,255,0.65); line-height: 1.7; position: relative; margin-bottom: 2rem; max-width: 380px; }
+  .feature-list { display: flex; flex-direction: column; gap: 12px; position: relative; }
+  .feat { display: flex; align-items: flex-start; gap: 10px; }
+  .feat i { color: #5BA3D9; font-size: 18px; margin-top: 2px; flex-shrink: 0; }
+  .feat p { font-size: 13px; color: rgba(255,255,255,0.7); line-height: 1.5; }
+  .feat strong { color: #fff; }
+  .landing-right { background: var(--surface); display: flex; align-items: center; justify-content: center; padding: 2rem; }
+  .login-card { width: 100%; max-width: 400px; }
+  .login-title { font-family: 'Fraunces', serif; font-size: 24px; font-weight: 600; color: var(--navy); margin-bottom: 4px; }
+  .login-sub { font-size: 13px; color: var(--text-muted); margin-bottom: 1.75rem; }
+  .login-divider { text-align: center; font-size: 12px; color: var(--text-faint); margin: 1rem 0; position: relative; }
+  .login-divider::before { content: ''; position: absolute; top: 50%; left: 0; right: 0; height: 1px; background: var(--border); }
+  .login-divider span { background: var(--surface); padding: 0 10px; position: relative; }
+  .login-footer { font-size: 12px; color: var(--text-muted); text-align: center; margin-top: 1.25rem; }
+  .login-footer a { color: var(--blue); cursor: pointer; font-weight: 500; }
+
+  /* ── STAR RATING ─────────────────────────────── */
+  .stars { color: var(--gold); font-size: 14px; }
+
+  /* ── RESPONSIVE UTILS ────────────────────────── */
+  .sub-screen { display: none; }
+  .sub-screen.active { display: block; }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════
+     SCREEN 1 — LANDING / LOGIN
+═══════════════════════════════════════════════ -->
+<div id="sc-landing" class="screen active" style="flex-direction:row;">
+  <div class="landing-wrap" style="width:100%">
+    <div class="landing-left">
+      <div class="logo" style="margin-bottom:2.5rem;font-size:26px;position:relative">Lex<em>o</em>.pe</div>
+      <h1 class="landing-tagline">El marketplace legal <em>para abogados</em> en Lima</h1>
+      <p class="landing-desc">Conecta con clientes, gestiona tus casos y cobra de forma segura, todo desde una sola plataforma. Registro 100% gratuito.</p>
+      <div class="feature-list">
+        <div class="feat"><i class="ti ti-gift"></i><p><strong>Sin costo de registro.</strong> Únete gratis y empieza a recibir casos de inmediato.</p></div>
+        <div class="feat"><i class="ti ti-shield-check"></i><p><strong>Verificación manual.</strong> Solo abogados colegiados activos. Tu reputación protegida.</p></div>
+        <div class="feat"><i class="ti ti-cash"></i><p><strong>Comisión solo cuando cobras.</strong> Lexo.pe retiene el 12% únicamente al momento del pago.</p></div>
+        <div class="feat"><i class="ti ti-lock"></i><p><strong>Comunicación segura.</strong> Todo contacto dentro de la plataforma, sin exponer tus datos.</p></div>
+      </div>
+    </div>
+    <div class="landing-right">
+      <div class="login-card">
+        <p class="login-title">Bienvenido de vuelta</p>
+        <p class="login-sub">Ingresa a tu cuenta de abogado</p>
+        <div class="field"><label>Correo electrónico</label><input type="email" value="c.mendoza@ejemplo.com" /></div>
+        <div class="field"><label>Contraseña</label><input type="password" value="••••••••" /></div>
+        <button class="btn btn-primary" style="width:100%;justify-content:center;padding:10px" onclick="showScreen('sc-dashboard');showSub('dashboard-home')">
+          Iniciar sesión <i class="ti ti-arrow-right"></i>
+        </button>
+        <div class="login-divider"><span>o</span></div>
+        <button class="btn btn-secondary" style="width:100%;justify-content:center;padding:10px" onclick="showScreen('sc-onboarding');goStep(1)">
+          <i class="ti ti-user-plus"></i> Crear cuenta gratis
+        </button>
+        <p class="login-footer">¿Olvidaste tu contraseña? <a>Recupérala aquí</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     SCREEN 2 — ONBOARDING
+═══════════════════════════════════════════════ -->
+<div id="sc-onboarding" class="screen">
+  <div class="topbar">
+    <div class="logo" onclick="showScreen('sc-landing')">Lex<em>o</em>.pe</div>
+    <span style="font-size:12px;color:rgba(255,255,255,0.5)">Portal para profesionales</span>
+  </div>
+  <div class="ob-center">
+
+    <!-- PASO 1 -->
+    <div id="ob1" class="ob-card" style="display:none">
+      <div class="ob-steps">
+        <div class="ob-dot current">1</div>
+        <div class="ob-line"></div>
+        <div class="ob-dot">2</div>
+        <div class="ob-line"></div>
+        <div class="ob-dot">3</div>
+      </div>
+      <div class="ob-step-labels">
+        <span class="current">Datos personales</span>
+        <span>Datos profesionales</span>
+        <span>Documentos</span>
+      </div>
+      <p class="ob-title">Crea tu cuenta</p>
+      <p class="ob-sub">Empieza en menos de 5 minutos. El registro es completamente gratuito.</p>
+
+      <div class="commission-notice">
+        <i class="ti ti-info-circle"></i>
+        <p>Lexo.pe <strong>no cobra membresía mensual.</strong> Solo aplicamos una comisión del <strong>12%</strong> sobre cada pago que recibas a través de la plataforma. Sin costos fijos.</p>
+      </div>
+
+      <div class="field-row">
+        <div class="field"><label>Nombres</label><input value="Carlos" /></div>
+        <div class="field"><label>Apellidos</label><input value="Mendoza Ríos" /></div>
+      </div>
+      <div class="field"><label>Correo electrónico</label><input type="email" value="c.mendoza@ejemplo.com" /></div>
+      <div class="field-row">
+        <div class="field"><label>Teléfono</label><input value="+51 987 654 321" /></div>
+        <div class="field"><label>DNI</label><input value="72345678" /></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Contraseña</label><input type="password" value="••••••••" /></div>
+        <div class="field"><label>Confirmar contraseña</label><input type="password" value="••••••••" /></div>
+      </div>
+      <div class="ob-footer">
+        <span class="ob-counter">Paso 1 de 3</span>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-secondary" onclick="showScreen('sc-landing')"><i class="ti ti-arrow-left"></i> Volver</button>
+          <button class="btn btn-primary" onclick="goStep(2)">Continuar <i class="ti ti-arrow-right"></i></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- PASO 2 -->
+    <div id="ob2" class="ob-card" style="display:none">
+      <div class="ob-steps">
+        <div class="ob-dot done"><i class="ti ti-check" style="font-size:12px"></i></div>
+        <div class="ob-line done"></div>
+        <div class="ob-dot current">2</div>
+        <div class="ob-line"></div>
+        <div class="ob-dot">3</div>
+      </div>
+      <div class="ob-step-labels">
+        <span>Datos personales</span>
+        <span class="current">Datos profesionales</span>
+        <span>Documentos</span>
+      </div>
+      <p class="ob-title">Tu perfil profesional</p>
+      <p class="ob-sub">Esta información aparecerá en tu perfil público y será verificada por nuestro equipo.</p>
+      <div class="field-row">
+        <div class="field"><label>N.º de colegiatura (CAL)</label><input value="CAL-54321" /></div>
+        <div class="field"><label>Años de experiencia</label><input value="8" /></div>
+      </div>
+      <div class="field"><label>Universidad de egreso</label><input value="Pontificia Universidad Católica del Perú" /></div>
+      <div class="field-row">
+        <div class="field"><label>Tarifa por consulta</label><input value="S/. 150 / hora" /></div>
+        <div class="field"><label>Disponibilidad</label>
+          <select><option>Disponible ahora</option><option>Solo fines de semana</option><option>Próximamente</option></select>
+        </div>
+      </div>
+      <div class="field">
+        <label>Especialidades <span style="font-weight:400;color:var(--text-faint)">(elige todas las que apliquen)</span></label>
+        <div class="tags" style="margin-top:8px">
+          <span class="tag on" onclick="this.classList.toggle('on')">Civil</span>
+          <span class="tag" onclick="this.classList.toggle('on')">Penal</span>
+          <span class="tag on" onclick="this.classList.toggle('on')">Laboral</span>
+          <span class="tag" onclick="this.classList.toggle('on')">Familia</span>
+          <span class="tag" onclick="this.classList.toggle('on')">Corporativo</span>
+          <span class="tag" onclick="this.classList.toggle('on')">Tributario</span>
+          <span class="tag" onclick="this.classList.toggle('on')">Administrativo</span>
+          <span class="tag" onclick="this.classList.toggle('on')">Constitucional</span>
+        </div>
+      </div>
+      <div class="field">
+        <label>Descripción profesional</label>
+        <textarea rows="3">Abogado con 8 años de experiencia en derecho civil y laboral. PUCP. Comprometido con resultados claros y comunicación transparente con cada cliente.</textarea>
+      </div>
+      <div class="ob-footer">
+        <span class="ob-counter">Paso 2 de 3</span>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-secondary" onclick="goStep(1)"><i class="ti ti-arrow-left"></i> Atrás</button>
+          <button class="btn btn-primary" onclick="goStep(3)">Continuar <i class="ti ti-arrow-right"></i></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- PASO 3 -->
+    <div id="ob3" class="ob-card" style="display:none">
+      <div class="ob-steps">
+        <div class="ob-dot done"><i class="ti ti-check" style="font-size:12px"></i></div>
+        <div class="ob-line done"></div>
+        <div class="ob-dot done"><i class="ti ti-check" style="font-size:12px"></i></div>
+        <div class="ob-line done"></div>
+        <div class="ob-dot current">3</div>
+      </div>
+      <div class="ob-step-labels">
+        <span>Datos personales</span>
+        <span>Datos profesionales</span>
+        <span class="current">Documentos</span>
+      </div>
+      <p class="ob-title">Sube tu documentación</p>
+      <p class="ob-sub">Verificamos manualmente cada abogado para garantizar la confianza en la plataforma.</p>
+
+      <div class="upload-done"><i class="ti ti-circle-check"></i> titulo_licenciado_derecho.pdf <span class="size">1.2 MB</span></div>
+
+      <div class="upload-zone" onclick="simulateUpload('cal',this)">
+        <i class="ti ti-id-badge-2"></i>
+        <p><strong>Carné de colegiatura CAL / regional</strong></p>
+        <p>PDF o imagen JPG/PNG · Máx. 5 MB · Haz clic para subir</p>
+      </div>
+      <div id="ud-cal" style="display:none" class="upload-done"><i class="ti ti-circle-check"></i> carne_colegiatura_cal.pdf <span class="size">0.8 MB</span></div>
+
+      <div class="upload-zone" onclick="simulateUpload('dni',this)">
+        <i class="ti ti-id"></i>
+        <p><strong>DNI escaneado — ambas caras</strong></p>
+        <p>PDF o imagen JPG/PNG · Máx. 5 MB · Haz clic para subir</p>
+      </div>
+      <div id="ud-dni" style="display:none" class="upload-done"><i class="ti ti-circle-check"></i> dni_ambas_caras.jpg <span class="size">2.1 MB</span></div>
+
+      <div class="security-note">
+        <i class="ti ti-lock"></i>
+        <span>Tus documentos son encriptados en tránsito y en reposo. Solo son accesibles por el equipo de verificación de Lexo.pe y nunca se comparten con terceros.</span>
+      </div>
+
+      <div class="ob-footer">
+        <span class="ob-counter">Paso 3 de 3</span>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-secondary" onclick="goStep(2)"><i class="ti ti-arrow-left"></i> Atrás</button>
+          <button class="btn btn-primary" onclick="goStep(4)">Enviar para revisión <i class="ti ti-send"></i></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- PASO 4 — CONFIRMACIÓN -->
+    <div id="ob4" class="ob-card" style="display:none">
+      <div class="status-body">
+        <div class="status-icon-wrap"><i class="ti ti-clock"></i></div>
+        <p style="font-family:'Fraunces',serif;font-size:22px;font-weight:600;color:var(--navy);margin-bottom:6px">¡Solicitud enviada!</p>
+        <p style="font-size:13px;color:var(--text-muted);max-width:360px;margin:0 auto">Tu documentación está en revisión. Nuestro equipo te confirmará por correo en un plazo de <strong>48 a 72 horas hábiles</strong>.</p>
+        <div class="status-track">
+          <div class="strack-item done"><i class="ti ti-circle-check"></i> Documentos recibidos correctamente</div>
+          <div class="strack-item doing"><i class="ti ti-loader-2"></i> Verificación manual en curso</div>
+          <div class="strack-item pending"><i class="ti ti-circle-dashed"></i> Aprobación y activación de cuenta</div>
+        </div>
+        <p class="ref-num">N.º de solicitud: <strong>#LXP-2025-4821</strong></p>
+        <button class="btn btn-primary" style="width:100%;justify-content:center;padding:10px" onclick="showScreen('sc-dashboard');showSub('dashboard-home')">
+          Ver estado de mi cuenta <i class="ti ti-arrow-right"></i>
+        </button>
+        <button class="btn btn-ghost" style="width:100%;justify-content:center;margin-top:8px" onclick="showScreen('sc-landing')">
+          Volver al inicio
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     SCREEN 3 — DASHBOARD (logged in)
+═══════════════════════════════════════════════ -->
+<div id="sc-dashboard" class="screen">
+  <div class="topbar">
+    <div class="logo" onclick="showScreen('sc-landing')">Lex<em>o</em>.pe</div>
+    <div class="topbar-nav">
+      <button class="tnav active" onclick="switchNav(this,'dashboard-home')">Dashboard</button>
+      <button class="tnav" onclick="switchNav(this,'casos')">Casos <span class="badge">3</span></button>
+      <button class="tnav" onclick="switchNav(this,'mensajes')">Mensajes <span class="badge">2</span></button>
+      <button class="tnav" onclick="switchNav(this,'cobros')">Cobros</button>
+      <button class="tnav" onclick="switchNav(this,'perfil')">Mi perfil</button>
+    </div>
+    <div class="topbar-right">
+      <span class="verified"><i class="ti ti-shield-check"></i> Verificado</span>
+      <div class="avatar-chip" style="margin-left:6px">
+        <div class="avatar">CM</div>
+        <span class="avatar-name">Carlos M.</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="app-body">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-section">Principal</div>
+      <div class="sitem active" onclick="switchSidebar(this,'dashboard-home')"><i class="ti ti-layout-dashboard"></i> Dashboard</div>
+      <div class="sitem" onclick="switchSidebar(this,'casos')"><i class="ti ti-briefcase"></i> Tablero de casos <span class="badge">3</span></div>
+      <div class="sitem" onclick="switchSidebar(this,'mensajes')"><i class="ti ti-message-2"></i> Mensajes <span class="badge">2</span></div>
+      <div class="sidebar-section">Cuenta</div>
+      <div class="sitem" onclick="switchSidebar(this,'cobros')"><i class="ti ti-wallet"></i> Cobros</div>
+      <div class="sitem" onclick="switchSidebar(this,'perfil')"><i class="ti ti-user-circle"></i> Mi perfil</div>
+      <div class="sitem" onclick="switchSidebar(this,'config')"><i class="ti ti-settings"></i> Configuración</div>
+      <div class="sidebar-section" style="margin-top:auto"></div>
+      <div class="sitem" onclick="showScreen('sc-onboarding');goStep(1)" style="margin-top:1rem"><i class="ti ti-arrow-left"></i> Ver onboarding</div>
+      <div class="sitem" onclick="showScreen('sc-landing')"><i class="ti ti-logout"></i> Cerrar sesión</div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main">
+
+      <!-- ── DASHBOARD HOME ── -->
+      <div id="sub-dashboard-home" class="sub-screen active">
+        <div class="page-header">
+          <h1 class="page-title">Buenos días, Carlos 👋</h1>
+          <p class="page-sub">Resumen de tu actividad en Lexo.pe — lunes 19 de mayo 2025</p>
+        </div>
+
+        <div class="metrics">
+          <div class="metric">
+            <div class="metric-icon" style="background:var(--blue-pale)"><i class="ti ti-briefcase" style="color:var(--blue)"></i></div>
+            <div class="metric-label">Casos activos</div>
+            <div class="metric-value">4</div>
+            <div class="metric-delta delta-up"><i class="ti ti-trending-up" style="font-size:11px"></i> +2 esta semana</div>
+          </div>
+          <div class="metric">
+            <div class="metric-icon" style="background:var(--green-pale)"><i class="ti ti-wallet" style="color:var(--green)"></i></div>
+            <div class="metric-label">Ingresos netos (mayo)</div>
+            <div class="metric-value">S/. 3,200</div>
+            <div class="metric-delta delta-up"><i class="ti ti-trending-up" style="font-size:11px"></i> +18% vs. abril</div>
+          </div>
+          <div class="metric">
+            <div class="metric-icon" style="background:var(--warn-pale)"><i class="ti ti-eye" style="color:var(--warn)"></i></div>
+            <div class="metric-label">Vistas de perfil</div>
+            <div class="metric-value">127</div>
+            <div class="metric-delta delta-up">Esta semana</div>
+          </div>
+          <div class="metric">
+            <div class="metric-icon" style="background:var(--gold-pale)"><i class="ti ti-star" style="color:var(--gold)"></i></div>
+            <div class="metric-label">Valoración</div>
+            <div class="metric-value">4.8 <span class="stars">★</span></div>
+            <div class="metric-delta" style="color:var(--text-faint)">24 reseñas</div>
+          </div>
+        </div>
+
+        <div class="grid2" style="margin-bottom:1.25rem">
+          <div class="card">
+            <div class="card-title"><i class="ti ti-activity"></i> Actividad reciente</div>
+            <div class="act-item">
+              <div class="act-icon" style="background:var(--green-pale)"><i class="ti ti-message-2" style="color:var(--green)"></i></div>
+              <div><div class="act-title">Nuevo mensaje de Ana Torres</div><div class="act-time">Hace 15 min · Caso laboral #4821</div></div>
+            </div>
+            <div class="act-item">
+              <div class="act-icon" style="background:var(--blue-pale)"><i class="ti ti-briefcase" style="color:var(--blue)"></i></div>
+              <div><div class="act-title">Propuesta aceptada — Caso civil #4802</div><div class="act-time">Hace 2 horas</div></div>
+            </div>
+            <div class="act-item">
+              <div class="act-icon" style="background:var(--green-pale)"><i class="ti ti-cash" style="color:var(--green)"></i></div>
+              <div><div class="act-title">Pago recibido S/. 800 — Caso tributario</div><div class="act-time">Ayer · Comisión Lexo.pe: S/. 96</div></div>
+            </div>
+            <div class="act-item">
+              <div class="act-icon" style="background:var(--gold-pale)"><i class="ti ti-star" style="color:var(--gold)"></i></div>
+              <div><div class="act-title">Nueva reseña 5 estrellas de Roberto C.</div><div class="act-time">Hace 2 días</div></div>
+            </div>
+          </div>
+
+          <div style="display:flex;flex-direction:column;gap:1.25rem">
+            <div class="card">
+              <div class="card-title"><i class="ti ti-bolt"></i> Acciones rápidas</div>
+              <div class="grid3">
+                <div class="qa-btn" onclick="switchSidebar(document.querySelector('.sitem:nth-child(3)'),'casos')"><i class="ti ti-briefcase"></i>Ver casos</div>
+                <div class="qa-btn" onclick="switchSidebar(document.querySelector('.sitem:nth-child(4)'),'mensajes')"><i class="ti ti-message-2"></i>Mensajes</div>
+                <div class="qa-btn" onclick="switchSidebar(document.querySelector('.sitem:nth-child(7)'),'perfil')"><i class="ti ti-user-edit"></i>Editar perfil</div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-title"><i class="ti ti-gift"></i> Tu plan actual — Comisión por uso</div>
+              <div style="font-size:13px;color:var(--text-muted);margin-bottom:10px">Sin costo mensual. Solo pagas cuando cobras.</div>
+              <div style="background:var(--gold-pale);border:1px solid #E8CE89;border-radius:var(--radius-sm);padding:10px 12px;font-size:12px;color:var(--warn)">
+                <i class="ti ti-percentage"></i> <strong>12% de comisión</strong> sobre cada pago recibido. Sin sorpresas.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── CASOS ── -->
+      <div id="sub-casos" class="sub-screen">
+        <div class="page-header">
+          <h1 class="page-title">Tablero de casos</h1>
+          <p class="page-sub">Casos publicados por clientes que coinciden con tus especialidades</p>
+        </div>
+        <div class="case-tabs">
+          <button class="ctab active">Disponibles (12)</button>
+          <button class="ctab">Mis propuestas (3)</button>
+          <button class="ctab">Casos activos (4)</button>
+          <button class="ctab">Cerrados</button>
+        </div>
+
+        <div class="case-card">
+          <div style="display:flex;gap:6px;flex-wrap:wrap">
+            <span class="pill pill-green">Laboral</span>
+            <span class="pill pill-red"><i class="ti ti-urgent" style="font-size:11px"></i> Urgente</span>
+          </div>
+          <p class="case-name">Demanda por despido arbitrario — empresa privada</p>
+          <p class="case-desc">Trabajador con 6 años de antigüedad, despido sin causa justificada ni carta notarial. Requiere orientación inmediata para interponer demanda. Lima, San Borja.</p>
+          <div class="case-footer">
+            <div>
+              <span class="case-meta"><i class="ti ti-clock" style="font-size:12px"></i> Hace 2 horas · 4 propuestas</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px">
+              <span class="case-price">S/. 1,200</span>
+              <button class="btn btn-primary btn-sm">Enviar propuesta</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="case-card">
+          <div style="display:flex;gap:6px">
+            <span class="pill pill-blue">Civil</span>
+          </div>
+          <p class="case-name">Revisión de contrato de compraventa de inmueble</p>
+          <p class="case-desc">Necesito revisión legal de contrato de compraventa antes de firma. Inmueble en San Isidro, Lima. Contrato ya redactado por inmobiliaria, quiero validar cláusulas.</p>
+          <div class="case-footer">
+            <span class="case-meta"><i class="ti ti-clock" style="font-size:12px"></i> Hace 5 horas · 7 propuestas</span>
+            <div style="display:flex;align-items:center;gap:12px">
+              <span class="case-price">S/. 450</span>
+              <button class="btn btn-primary btn-sm">Enviar propuesta</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="case-card">
+          <div style="display:flex;gap:6px">
+            <span class="pill pill-navy">Tributario</span>
+          </div>
+          <p class="case-name">Defensa ante SUNAT — proceso de fiscalización IGV</p>
+          <p class="case-desc">Empresa MYPE recibió notificación de fiscalización del IGV de los últimos 3 períodos. Necesita abogado tributarista con experiencia en procedimientos SUNAT.</p>
+          <div class="case-footer">
+            <span class="case-meta"><i class="ti ti-clock" style="font-size:12px"></i> Hace 1 día · 2 propuestas</span>
+            <div style="display:flex;align-items:center;gap:12px">
+              <span class="case-price">S/. 2,500</span>
+              <button class="btn btn-primary btn-sm">Enviar propuesta</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="case-card">
+          <div style="display:flex;gap:6px">
+            <span class="pill pill-warn">Familia</span>
+          </div>
+          <p class="case-name">Proceso de divorcio por mutuo acuerdo — Lima</p>
+          <p class="case-desc">Pareja de mutuo acuerdo busca abogado para tramitar divorcio convencional. Sin hijos. Bienes a repartir: departamento y vehículo. Quieren proceso rápido.</p>
+          <div class="case-footer">
+            <span class="case-meta"><i class="ti ti-clock" style="font-size:12px"></i> Hace 3 días · 9 propuestas</span>
+            <div style="display:flex;align-items:center;gap:12px">
+              <span class="case-price">S/. 800</span>
+              <button class="btn btn-primary btn-sm">Enviar propuesta</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── MENSAJES ── -->
+      <div id="sub-mensajes" class="sub-screen">
+        <div class="page-header">
+          <h1 class="page-title">Mensajes</h1>
+          <p class="page-sub">Todo contacto con clientes ocurre dentro de Lexo.pe. No se permite compartir medios de contacto externos.</p>
+        </div>
+        <div class="chat-layout">
+          <div class="chat-sidebar">
+            <div class="chat-header">Conversaciones</div>
+            <div class="chat-thread active">
+              <div class="chat-thread-name">Ana Torres <span style="font-size:10px;color:var(--text-faint)">10:32</span></div>
+              <div class="chat-thread-sub">Caso laboral #4821 · <span class="badge" style="position:static;display:inline">2</span></div>
+            </div>
+            <div class="chat-thread">
+              <div class="chat-thread-name">Roberto Castro <span style="font-size:10px;color:var(--text-faint)">Ayer</span></div>
+              <div class="chat-thread-sub">Caso tributario #4789</div>
+            </div>
+            <div class="chat-thread">
+              <div class="chat-thread-name">Luis Morales <span style="font-size:10px;color:var(--text-faint)">Lun</span></div>
+              <div class="chat-thread-sub">Consulta civil</div>
+            </div>
+          </div>
+          <div class="chat-main">
+            <div class="chat-top">
+              <div class="avatar" style="width:34px;height:34px;font-size:12px">AT</div>
+              <div>
+                <div style="font-size:13px;font-weight:600;color:var(--navy)">Ana Torres</div>
+                <div style="font-size:11px;color:var(--text-faint)">Caso laboral #4821</div>
+              </div>
+              <span class="pill pill-green" style="margin-left:auto"><i class="ti ti-circle-check" style="font-size:11px"></i> En curso</span>
+            </div>
+            <div class="chat-body">
+              <div class="msg msg-in">Buenos días doctor, ¿ya revisó los documentos que le envié ayer?</div>
+              <div class="msg msg-out">Sí, los revisé. Están en orden. Necesito el contrato original de trabajo para complementar el expediente.</div>
+              <div class="msg msg-in">Perfecto, lo tengo escaneado. Lo subo ahora mismo por aquí.</div>
+              <div class="msg msg-out">Excelente, en cuanto lo reciba termino de armar la demanda. Le confirmo mañana.</div>
+              <div class="msg msg-in">Muchas gracias doctor. ¿Hay algo más que necesite de mi parte?</div>
+            </div>
+            <div class="chat-input-row">
+              <div class="secure-pill"><i class="ti ti-lock" style="font-size:12px"></i> Canal seguro</div>
+              <input class="chat-input" placeholder="Escribe un mensaje..." />
+              <button class="btn btn-primary btn-sm"><i class="ti ti-paperclip"></i></button>
+              <button class="btn btn-primary btn-sm"><i class="ti ti-send"></i></button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── COBROS ── -->
+      <div id="sub-cobros" class="sub-screen">
+        <div class="page-header">
+          <h1 class="page-title">Cobros y comisiones</h1>
+          <p class="page-sub">Historial de pagos y desglose de comisiones Lexo.pe</p>
+        </div>
+
+        <div class="metrics" style="grid-template-columns:repeat(3,1fr);margin-bottom:1.5rem">
+          <div class="metric">
+            <div class="metric-label">Ingresos brutos (mayo)</div>
+            <div class="metric-value">S/. 3,636</div>
+            <div class="metric-delta" style="color:var(--text-faint)">Antes de comisión</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">Comisión Lexo.pe (12%)</div>
+            <div class="metric-value" style="color:var(--red)">− S/. 436</div>
+            <div class="metric-delta" style="color:var(--text-faint)">Sin membresía mensual</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">Neto a recibir</div>
+            <div class="metric-value" style="color:var(--green)">S/. 3,200</div>
+            <div class="metric-delta delta-up"><i class="ti ti-trending-up" style="font-size:11px"></i> +18% vs. abril</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title"><i class="ti ti-history"></i> Historial de pagos</div>
+          <table class="earn-table">
+            <thead>
+              <tr>
+                <th>Caso</th>
+                <th>Cliente</th>
+                <th>Fecha</th>
+                <th style="text-align:right">Bruto</th>
+                <th style="text-align:right">Comisión 12%</th>
+                <th style="text-align:right">Neto</th>
+                <th style="text-align:right">Estado</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Caso civil #4821</td>
+                <td style="color:var(--text-muted)">Ana Torres</td>
+                <td style="color:var(--text-muted)">12 may 2025</td>
+                <td style="text-align:right">S/. 1,500</td>
+                <td style="text-align:right;color:var(--red)">− S/. 180</td>
+                <td style="text-align:right;font-weight:600">S/. 1,320</td>
+                <td style="text-align:right"><span class="pill pill-green">Pagado</span></td>
+              </tr>
+              <tr>
+                <td>Caso tributario #4789</td>
+                <td style="color:var(--text-muted)">Roberto C.</td>
+                <td style="color:var(--text-muted)">08 may 2025</td>
+                <td style="text-align:right">S/. 800</td>
+                <td style="text-align:right;color:var(--red)">− S/. 96</td>
+                <td style="text-align:right;font-weight:600">S/. 704</td>
+                <td style="text-align:right"><span class="pill pill-green">Pagado</span></td>
+              </tr>
+              <tr>
+                <td>Caso laboral #4801</td>
+                <td style="color:var(--text-muted)">Luis M.</td>
+                <td style="color:var(--text-muted)">Pendiente</td>
+                <td style="text-align:right">S/. 1,336</td>
+                <td style="text-align:right;color:var(--red)">− S/. 160</td>
+                <td style="text-align:right;font-weight:600">S/. 1,176</td>
+                <td style="text-align:right"><span class="pill pill-warn">Pendiente</span></td>
+              </tr>
+            </tbody>
+          </table>
+          <div style="margin-top:1.25rem;display:flex;gap:8px">
+            <button class="btn btn-primary"><i class="ti ti-building-bank"></i> Retirar S/. 2,024</button>
+            <button class="btn btn-secondary"><i class="ti ti-settings"></i> Cuenta bancaria</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── PERFIL ── -->
+      <div id="sub-perfil" class="sub-screen">
+        <div class="page-header">
+          <h1 class="page-title">Mi perfil público</h1>
+          <p class="page-sub">Así te ven los clientes en Lexo.pe</p>
+        </div>
+        <div class="profile-hero">
+          <div class="profile-avatar">CM</div>
+          <div style="flex:1">
+            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+              <p class="profile-name">Carlos Mendoza Ríos</p>
+              <span class="verified"><i class="ti ti-shield-check"></i> Verificado</span>
+            </div>
+            <p class="profile-cal">CAL-54321 · PUCP · 8 años de experiencia</p>
+            <div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap">
+              <span class="pill" style="background:rgba(255,255,255,0.15);color:#fff">Civil</span>
+              <span class="pill" style="background:rgba(255,255,255,0.15);color:#fff">Laboral</span>
+              <span class="pill" style="background:rgba(255,255,255,0.15);color:#fff">Tributario</span>
+            </div>
+          </div>
+          <div style="text-align:right">
+            <div style="color:#fff;font-size:22px;font-weight:600">S/. 150<span style="font-size:13px;opacity:.65">/hora</span></div>
+            <div style="color:rgba(255,255,255,.6);font-size:13px;margin-top:3px"><span class="stars">★★★★★</span> 4.8 · 24 reseñas</div>
+          </div>
+        </div>
+
+        <div class="grid2">
+          <div class="card">
+            <div class="card-title"><i class="ti ti-pencil"></i> Editar información</div>
+            <div class="field"><label>Tarifa por hora / consulta</label><input value="S/. 150 / hora" /></div>
+            <div class="field">
+              <label>Especialidades activas</label>
+              <div class="tags" style="margin-top:8px">
+                <span class="tag on" onclick="this.classList.toggle('on')">Civil</span>
+                <span class="tag on" onclick="this.classList.toggle('on')">Laboral</span>
+                <span class="tag on" onclick="this.classList.toggle('on')">Tributario</span>
+                <span class="tag" onclick="this.classList.toggle('on')">Penal</span>
+                <span class="tag" onclick="this.classList.toggle('on')">Familia</span>
+              </div>
+            </div>
+            <div class="field"><label>Descripción profesional</label><textarea rows="4">Abogado con 8 años de experiencia en derecho civil y laboral. PUCP. Comprometido con resultados claros y comunicación transparente con cada cliente.</textarea></div>
+            <div class="avail-toggle">
+              <span style="font-size:13px;color:var(--text-muted)">Estado de disponibilidad</span>
+              <div class="toggle on" id="avail-toggle" onclick="toggleAvail()"></div>
+              <span id="avail-label" style="font-size:12px;font-weight:500;color:var(--green)">Disponible</span>
+            </div>
+            <div style="margin-top:1.25rem">
+              <button class="btn btn-primary"><i class="ti ti-device-floppy"></i> Guardar cambios</button>
+            </div>
+          </div>
+          <div>
+            <div class="card" style="margin-bottom:1.25rem">
+              <div class="card-title"><i class="ti ti-star"></i> Últimas reseñas</div>
+              <div style="margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid var(--border)">
+                <div style="display:flex;justify-content:space-between;margin-bottom:3px">
+                  <span style="font-size:13px;font-weight:500">Roberto Castro</span>
+                  <span class="stars" style="font-size:12px">★★★★★</span>
+                </div>
+                <p style="font-size:12px;color:var(--text-muted)">"Excelente abogado, muy claro y profesional. Resolvió mi caso tributario eficientemente."</p>
+              </div>
+              <div>
+                <div style="display:flex;justify-content:space-between;margin-bottom:3px">
+                  <span style="font-size:13px;font-weight:500">María Flores</span>
+                  <span class="stars" style="font-size:12px">★★★★★</span>
+                </div>
+                <p style="font-size:12px;color:var(--text-muted)">"Muy recomendable. Siempre disponible y con respuestas claras."</p>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-title"><i class="ti ti-chart-bar"></i> Estadísticas de perfil</div>
+              <div style="display:flex;flex-direction:column;gap:8px">
+                <div style="display:flex;justify-content:space-between;font-size:13px"><span style="color:var(--text-muted)">Vistas este mes</span><strong>127</strong></div>
+                <div style="display:flex;justify-content:space-between;font-size:13px"><span style="color:var(--text-muted)">Tasa de respuesta</span><strong style="color:var(--green)">98%</strong></div>
+                <div style="display:flex;justify-content:space-between;font-size:13px"><span style="color:var(--text-muted)">Casos completados</span><strong>31</strong></div>
+                <div style="display:flex;justify-content:space-between;font-size:13px"><span style="color:var(--text-muted)">Propuestas aceptadas</span><strong style="color:var(--blue)">78%</strong></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── CONFIG ── -->
+      <div id="sub-config" class="sub-screen">
+        <div class="page-header">
+          <h1 class="page-title">Configuración</h1>
+          <p class="page-sub">Preferencias de cuenta y notificaciones</p>
+        </div>
+        <div class="grid2">
+          <div class="card">
+            <div class="card-title"><i class="ti ti-bell"></i> Notificaciones</div>
+            <div style="display:flex;flex-direction:column;gap:12px">
+              <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px"><span>Nuevos casos disponibles</span><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px"><span>Mensajes de clientes</span><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px"><span>Pagos recibidos</span><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px"><span>Resumen semanal por correo</span><div class="toggle" onclick="this.classList.toggle('on')"></div></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title"><i class="ti ti-lock"></i> Seguridad</div>
+            <div class="field"><label>Correo electrónico</label><input value="c.mendoza@ejemplo.com" /></div>
+            <div class="field"><label>Nueva contraseña</label><input type="password" placeholder="Dejar en blanco para no cambiar" /></div>
+            <button class="btn btn-secondary"><i class="ti ti-device-floppy"></i> Guardar cambios</button>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<script>
+  function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+  }
+
+  function goStep(n) {
+    for (let i = 1; i <= 4; i++) {
+      const el = document.getElementById('ob' + i);
+      if (el) el.style.display = (i === n) ? 'block' : 'none';
+    }
+  }
+
+  function showSub(id) {
+    document.querySelectorAll('.sub-screen').forEach(s => s.classList.remove('active'));
+    const el = document.getElementById('sub-' + id);
+    if (el) el.classList.add('active');
+  }
+
+  function switchNav(btn, subId) {
+    document.querySelectorAll('.tnav').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    showSub(subId);
+    document.querySelectorAll('.sitem').forEach(s => s.classList.remove('active'));
+    const map = { 'dashboard-home': 1, 'casos': 2, 'mensajes': 3, 'cobros': 5, 'perfil': 6 };
+    const target = document.querySelectorAll('.sitem')[map[subId] - 1];
+    if (target) target.classList.add('active');
+  }
+
+  function switchSidebar(item, subId) {
+    document.querySelectorAll('.sitem').forEach(s => s.classList.remove('active'));
+    item.classList.add('active');
+    showSub(subId);
+  }
+
+  function simulateUpload(id, zone) {
+    document.getElementById('ud-' + id).style.display = 'flex';
+    zone.style.display = 'none';
+  }
+
+  function toggleAvail() {
+    const t = document.getElementById('avail-toggle');
+    const l = document.getElementById('avail-label');
+    t.classList.toggle('on');
+    const isOn = t.classList.contains('on');
+    l.textContent = isOn ? 'Disponible' : 'Ocupado';
+    l.style.color = isOn ? 'var(--green)' : 'var(--red)';
+  }
+
+  // Init
+  goStep(1);
+</script>
+</body>
+</html>
